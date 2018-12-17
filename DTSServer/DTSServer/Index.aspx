@@ -8,9 +8,19 @@
     <title></title>
 </head>
 <body>
-    <form id="form1" runat="server">
-        <div>
-        </div>
-    </form>
+    <div id="head">
+        <h1>Device List</h1>
+        <hr/>
+    </div>
+    <div id="menu">
+        <a href="Configration.aspx">Configration</a>
+    </div>
+    <br/>
+    <div id="table">
+        <asp:ScriptManager ID="ScriptManager1" runat="server">
+        </asp:ScriptManager>
+        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+        </asp:UpdatePanel>
+    </div>
 </body>
 </html>
