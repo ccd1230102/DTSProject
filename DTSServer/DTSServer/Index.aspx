@@ -9,34 +9,12 @@
 </head>
 <body>
     <style type="text/css">
-        table {
-            width: 1024px;
-            border: 1px solid;
-        }
+        table,table tr th, table tr td { border:1px solid #000000; }
+        table { width: 1024px; min-height: 25px; line-height: 25px; text-align: center; border-collapse: collapse; padding:2px;}  
 
-            table td {
-                border-left: 1px solid;
-                border-top: 1px solid;
-            }
-
-            table th {
-                width: 1024px;
-                border: 1px solid;
-            }
-
-            table tr.hover {
-                background-color: aliceblue;
-            }
-
-            table tr.normal:hover {
-                background-color: #0180FE;
-                color: #fff;
-            }
-
-            table tr.hover:hover {
-                background-color: #0180FE;
-                color: #fff;
-            }
+        table tr.alter { background-color: aliceblue; }
+        table tr.normal:hover { background-color: #0180FE; color: #fff; }
+        table tr.alter:hover { background-color: #0180FE; color: #fff; }
     </style>
     <div>
         <h1>Device List</h1>
@@ -45,7 +23,7 @@
     <div>
         <a href="Configration.aspx">Configration</a>
     </div>
-    <br />
+    <hr />
     <form id="Form1" runat="server">
         <div>
             <asp:ScriptManager ID="ScriptManager1" runat="server" />
@@ -74,7 +52,7 @@
                             </tr>
                         </ItemTemplate>
                         <AlternatingItemTemplate>
-                            <tr class="hover">
+                            <tr class="alter">
                                 <td><%#Eval("ID") %></td>
                                 <td><%#Eval("IP") %></td>
                                 <td><%#Eval("Status") %></td>
@@ -84,6 +62,7 @@
                             </tr>
                         </AlternatingItemTemplate>
                         <FooterTemplate>
+                            </table>
                         </FooterTemplate>
                     </asp:Repeater>
                     <asp:Timer ID="Timer1" runat="server" Interval="1000" OnTick="Timer1_Tick" />

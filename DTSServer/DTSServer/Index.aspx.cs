@@ -44,7 +44,7 @@ namespace DTSServer
 
         protected void Timer1_Tick(object sender, EventArgs e)
         {
-            //Init_DataSource();
+            Init_DataSource();
         }
     }
 }
