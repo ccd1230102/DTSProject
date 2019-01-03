@@ -13,10 +13,10 @@ namespace DTSServer
         {
             if (IsPostBack) return;
 
-            Init_DataSource();
+            Bind();
         }
 
-        protected void Init_DataSource()
+        private void Bind()
         {
             try
             {
@@ -79,7 +79,7 @@ namespace DTSServer
 
         protected void Timer1_Tick(object sender, EventArgs e)
         {
-            Init_DataSource();
+            Bind();
         }
     }
 }
