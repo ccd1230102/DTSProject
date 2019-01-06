@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Services;
 
 namespace DTSServer
@@ -30,9 +32,17 @@ namespace DTSServer
             public string Treatment { get; set; }
         }
 
+        public class ConsumableInfo
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
+            public int Limit { get; set; }
+        }
+
         [WebMethod]
         public bool PostRunningData(RunningData data)
         {
+            string strIp = Context.Request.UserHostAddress.ToString();
             return true;
         }
 
@@ -41,24 +51,80 @@ namespace DTSServer
         {
             List<AlarmInfo> ret = new List<AlarmInfo>();
 
-            AlarmInfo info1 = new AlarmInfo
+            try
             {
-                ID = 1,
-                Name = "test",
-                Level = 1,
-                Treatment = "test"
-            };
+                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+                SqlConnection sqlConnection = new SqlConnection(conString);
+                sqlConnection.Open();
 
-            AlarmInfo info2 = new AlarmInfo
+                SqlCommand cmd = new SqlCommand
+                {
+                    Connection = sqlConnection,
+                    CommandText = "SELECT * FROM Warning"
+                };
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    AlarmInfo info1 = new AlarmInfo
+                    {
+                        ID = (int)reader[0],
+                        Name = (string)reader[1],
+                        Level = (int)reader[2],
+                        Treatment = (string)reader[3]
+                    };
+
+                    ret.Add(info1);
+                }
+                reader.Close();
+
+                sqlConnection.Close();
+            }
+            catch (Exception ex)
             {
-                ID = 2,
-                Name = "test2",
-                Level = 2,
-                Treatment = "test2"
-            };
 
-            ret.Add(info1);
-            ret.Add(info2);
+            }
+
+            return ret;
+        }
+
+        [WebMethod]
+        public List<ConsumableInfo> GetConsumableInfoConfigration()
+        {
+            List<ConsumableInfo> ret = new List<ConsumableInfo>();
+
+            try
+            {
+                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+                SqlConnection sqlConnection = new SqlConnection(conString);
+                sqlConnection.Open();
+
+                SqlCommand cmd = new SqlCommand
+                {
+                    Connection = sqlConnection,
+                    CommandText = "SELECT * FROM Consumable"
+                };
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    ConsumableInfo info1 = new ConsumableInfo
+                    {
+                        ID = (int)reader[0],
+                        Name = (string)reader[1],
+                        Limit = (int)reader[2]
+                    };
+
+                    ret.Add(info1);
+                }
+                reader.Close();
+
+                sqlConnection.Close();
+            }
+            catch (Exception ex)
+            {
+
+            }
 
             return ret;
         }

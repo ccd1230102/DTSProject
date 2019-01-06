@@ -12,9 +12,10 @@ namespace DTSServer
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (IsPostBack) return;
-
-            Bind();
+            if (!IsPostBack)
+            {
+                this.Bind();
+            }
         }
 
         private void Bind()
@@ -44,7 +45,7 @@ namespace DTSServer
 
         protected void Timer1_Tick(object sender, EventArgs e)
         {
-            Bind();
+            this.Bind();
         }
     }
 }

@@ -29,12 +29,19 @@
                 <br />
                 <div>
                     <h2>Warning Setting</h2>
-                    <asp:Button ID="AddWarning" runat="server" Text="Add" />
+                    <asp:Button ID="AddWarning" runat="server" Text="Add" OnClick="WarningGridView_AddingRow"/>
                     <asp:GridView ID="WarningGridView" runat="server" CssClass="mGrid" AllowPaging="True" AutoGenerateColumns="False" OnPageIndexChanging="WarningGridView_PageIndexChanging" OnRowCancelingEdit="WarningGridView_RowCancelingEdit" OnRowEditing="WarningGridView_RowEditing" AllowSorting="True" OnRowDeleting="WarningGridView_RowDeleting" OnRowUpdating="WarningGridView_RowUpdating" Width="1024">
                         <Columns>
                             <asp:BoundField DataField="ID" HeaderText="ID" ReadOnly="True" />
                             <asp:BoundField DataField="Name" HeaderText="Name" />
-                            <asp:BoundField DataField="Level" HeaderText="Level" />
+                            <asp:TemplateField HeaderText="Level">
+                                <ItemTemplate>
+                                    <asp:Label runat="server" Text='<%#Eval("Level")%>' />
+                                </ItemTemplate>
+                                <EditItemTemplate>
+                                    <asp:TextBox ID="TextBox2" runat="server" Text='<%#Eval("Level")%>' onkeypress="if (event.keyCode < 48 || event.keyCode >57) event.returnValue = false;"/>
+                                </EditItemTemplate>
+                            </asp:TemplateField>
                             <asp:BoundField DataField="Treatment" HeaderText="Treatment" />
                             <asp:CommandField ShowEditButton="True" />
                             <asp:CommandField ShowDeleteButton="True" />
@@ -44,12 +51,19 @@
                 <br />
                 <div>
                     <h2>Consumable Setting</h2>
-                    <asp:Button ID="Button1" runat="server" Text="Add" />
+                    <asp:Button ID="Button1" runat="server" Text="Add" OnClick="ConsumableGridView_AddingRow"/>
                     <asp:GridView ID="ConsumableGridView" runat="server" AllowPaging="True" AutoGenerateColumns="False" OnPageIndexChanging="ConsumableGridView_PageIndexChanging" OnRowCancelingEdit="ConsumableGridView_RowCancelingEdit" OnRowEditing="ConsumableGridView_RowEditing" AllowSorting="True" OnRowDeleting="ConsumableGridView_RowDeleting" OnRowUpdating="ConsumableGridView_RowUpdating" Width="1024">
                         <Columns>
                             <asp:BoundField DataField="ID" HeaderText="ID" ReadOnly="True" />
                             <asp:BoundField DataField="Name" HeaderText="Name" />
-                            <asp:BoundField DataField="Limit" HeaderText="Limit" />
+                            <asp:TemplateField HeaderText="Limit">
+                                <ItemTemplate>
+                                    <asp:Label runat="server" Text='<%#Eval("Limit")%>' />
+                                </ItemTemplate>
+                                <EditItemTemplate>
+                                    <asp:TextBox ID="TextBox2" runat="server" Text='<%#Eval("Limit")%>' onkeypress="if (event.keyCode < 48 || event.keyCode >57) event.returnValue = false;"/>
+                                </EditItemTemplate>
+                            </asp:TemplateField>
                             <asp:CommandField ShowEditButton="True" />
                             <asp:CommandField ShowDeleteButton="True" />
                         </Columns>
