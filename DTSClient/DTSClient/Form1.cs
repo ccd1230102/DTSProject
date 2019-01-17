@@ -34,8 +34,26 @@ namespace DTSClient
         {
             Hashtable Pars = new Hashtable
             {
-                { "ID", 123 },
-                { "Status", "Running" }
+                // For start
+                { "ID", 1 },
+                { "Shift", "测试" },
+                { "Status", 1 },
+                { "Count", 0 }
+                //
+
+                /* For running
+                { "ID", 1 },
+                { "Shift", "测试" },
+                { "Status", 2 },
+                { "Count", 100 }
+                */
+
+                /* For stop
+                { "ID", 1 },
+                { "Shift", "测试" },
+                { "Status", 0 },
+                { "Count", 0 }
+                */
             };
             mDTSManager.UpdateRunningData(Pars);
         }

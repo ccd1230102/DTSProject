@@ -17,11 +17,11 @@
         table tr.alter:hover { background-color: #0180FE; color: #fff; }
     </style>
     <div>
-        <h1>Device List</h1>
+        <h1>设备列表</h1>
         <hr />
     </div>
     <div>
-        <a href="Configration.aspx">Configration</a>
+        <a href="Configration.aspx">设置</a>
     </div>
     <hr />
     <form id="Form1" runat="server">
@@ -33,32 +33,38 @@
                         <HeaderTemplate>
                             <table>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>IP adress</th>
-                                    <th>Status</th>
-                                    <th>Latest warning</th>
-                                    <th>Running Time</th>
-                                    <th>Details</th>
+                                    <th>编号</th>
+                                    <th>班次</th>
+                                    <th>生产数量</th>
+                                    <th>运行时间</th>
+                                    <th>0故障运行时间</th>
+                                    <th>停机时间</th>
+                                    <th>运行状态</th>
+                                    <th></th>
                                 </tr>
                         </HeaderTemplate>
                         <ItemTemplate>
                             <tr class="normal">
                                 <td><%#Eval("ID") %></td>
-                                <td><%#Eval("IP") %></td>
+                                <td><%#Eval("Shift") %></td>
+                                <td><%#Eval("Count") %></td>
+                                <td><%#Eval("RunningTime") %></td>
+                                <td><%#Eval("ZeroWarningTime") %></td>
+                                <td><%#Eval("StopTime") %></td>
                                 <td><%#Eval("Status") %></td>
-                                <td><%#Eval("Warning") %></td>
-                                <td><%#Eval("Time") %></td>
-                                <td><a href="Details.aspx?id=<%#Eval("ID") %>">Details</a></td>
+                                <td><a href="Details.aspx?id=<%#Eval("ID") %>">详情</a></td>
                             </tr>
                         </ItemTemplate>
                         <AlternatingItemTemplate>
                             <tr class="alter">
                                 <td><%#Eval("ID") %></td>
-                                <td><%#Eval("IP") %></td>
+                                <td><%#Eval("Shift") %></td>
+                                <td><%#Eval("Count") %></td>
+                                <td><%#Eval("RunningTime") %></td>
+                                <td><%#Eval("ZeroWarningTime") %></td>
+                                <td><%#Eval("StopTime") %></td>
                                 <td><%#Eval("Status") %></td>
-                                <td><%#Eval("Warning") %></td>
-                                <td><%#Eval("Time") %></td>
-                                <td><a href="Details.aspx?id=<%#Eval("ID") %>">Details</a></td>
+                                <td><a href="Details.aspx?id=<%#Eval("ID") %>">详情</a></td>
                             </tr>
                         </AlternatingItemTemplate>
                         <FooterTemplate>
