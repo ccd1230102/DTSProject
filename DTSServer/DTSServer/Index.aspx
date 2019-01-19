@@ -21,7 +21,7 @@
         <hr />
     </div>
     <div>
-        <a href="Configration.aspx">设置</a>
+        <a href="Configration.aspx">设备配置</a>
     </div>
     <hr />
     <form id="Form1" runat="server">

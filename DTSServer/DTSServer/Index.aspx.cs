@@ -70,6 +70,8 @@ namespace DTSServer
             }
             reader.Close();
 
+            sqlConnection.Close();
+
             this.Repeater1.DataSource = dt;
             this.Repeater1.DataBind();
         }

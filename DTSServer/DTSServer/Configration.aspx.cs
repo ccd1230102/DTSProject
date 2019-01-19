@@ -60,9 +60,9 @@ namespace DTSServer
                     Connection = sqlConnection,
                     CommandText = "INSERT INTO Warning(Name, Level, Treatment)VALUES(@para1, @para2, @para3)"
                 };
-                cmd.Parameters.Add("@para1", SqlDbType.NVarChar).Value = "Warning";
+                cmd.Parameters.Add("@para1", SqlDbType.NVarChar).Value = "警告";
                 cmd.Parameters.Add("@para2", SqlDbType.Int).Value = 1;
-                cmd.Parameters.Add("@para3", SqlDbType.NVarChar).Value = "Null";
+                cmd.Parameters.Add("@para3", SqlDbType.NVarChar).Value = "";
                 cmd.ExecuteNonQuery();
 
                 cmd = new SqlCommand
@@ -201,10 +201,11 @@ namespace DTSServer
                 SqlCommand cmd = new SqlCommand
                 {
                     Connection = sqlConnection,
-                    CommandText = "INSERT INTO Consumable(Name, Limit)VALUES(@para1, @para2)"
+                    CommandText = "INSERT INTO Consumable(Name, Information, Limit)VALUES(@para1, @para2, @para3)"
                 };
-                cmd.Parameters.Add("@para1", SqlDbType.NVarChar).Value = "Consumable";
-                cmd.Parameters.Add("@para2", SqlDbType.Int).Value = 3600;
+                cmd.Parameters.Add("@para1", SqlDbType.NVarChar).Value = "易损件";
+                cmd.Parameters.Add("@para2", SqlDbType.NVarChar).Value = "";
+                cmd.Parameters.Add("@para3", SqlDbType.Int).Value = 24;
                 cmd.ExecuteNonQuery();
 
                 cmd = new SqlCommand
@@ -291,6 +292,8 @@ namespace DTSServer
                 return;
             }
 
+            TextBox infoTextBox = (TextBox)this.ConsumableGridView.Rows[index].Cells[2].Controls[0];
+
             TextBox limitTextBox = (TextBox)this.ConsumableGridView.Rows[index].FindControl("TextBox2");
             string limit = limitTextBox.Text;
             if (limit.Length == 0)
@@ -309,11 +312,12 @@ namespace DTSServer
                 SqlCommand cmd = new SqlCommand
                 {
                     Connection = sqlConnection,
-                    CommandText = "UPDATE Consumable SET Name=@para1, Limit=@para2 WHERE ID=@para3"
+                    CommandText = "UPDATE Consumable SET Name=@para1, Information=@para2, Limit=@para3 WHERE ID=@para4"
                 };
                 cmd.Parameters.Add("@para1", SqlDbType.NVarChar).Value = name;
-                cmd.Parameters.Add("@para2", SqlDbType.Int).Value = limit;
-                cmd.Parameters.Add("@para3", SqlDbType.Int).Value = id;
+                cmd.Parameters.Add("@para2", SqlDbType.NVarChar).Value = infoTextBox.Text;
+                cmd.Parameters.Add("@para3", SqlDbType.Int).Value = limit;
+                cmd.Parameters.Add("@para4", SqlDbType.Int).Value = id;
 
                 cmd.ExecuteNonQuery();
 

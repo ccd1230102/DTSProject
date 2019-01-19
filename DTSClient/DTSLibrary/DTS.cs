@@ -62,6 +62,51 @@ namespace DTSLibrary
                 XmlDocument xml = WebServiceHelper.QuerySoapWebService(serverIP + "/Process.asmx", "PostRunningData", "data", data);
 
                 ret = xml.InnerText == "true";
+                
+                List<int> ids = new List<int>() { 1, 2 };
+                List<int> times = new List<int>() { 5, 10 };
+
+                Hashtable Pars = new Hashtable
+                {
+                    { "DeviceID", 1 },
+                    { "ConsumableIDs", ids },
+                    { "UsedTimes", times},
+                };
+
+                WebServiceHelper.QuerySoapWebService(serverIP + "/Process.asmx", "PostConsumableList", "list", Pars);
+
+                Pars = new Hashtable
+                {
+                    { "DeviceID", 1 },
+                    { "ConsumableID", 1 },
+                    { "UsedTimes", 0 },
+                    { "ReplaceTime", DateTime.Now },
+                    { "ReplacePeople", "维修1" }
+                };
+
+                WebServiceHelper.QuerySoapWebService(serverIP + "/Process.asmx", "PostConsumableReplaceData", "data", Pars);
+
+                Pars = new Hashtable
+                {
+                    { "DeviceID", 1 },
+                    { "WarningID", 2 },
+                    { "OccurTime", DateTime.Now }
+                };
+
+                xml = WebServiceHelper.QuerySoapWebService(serverIP + "/Process.asmx", "PostWarningData", "data", Pars);
+                int WarningDataID = Convert.ToInt32(xml.InnerText);
+
+                Pars = new Hashtable
+                {
+                    { "DeviceID", 1 },
+                    { "WarningDataID", WarningDataID },
+                    { "FixTime", DateTime.Now },
+                    { "Treatment", "忽略" },
+                    { "Result", "结果" },
+                    { "FixDuration", "300" }
+                };
+
+                WebServiceHelper.QuerySoapWebService(serverIP + "/Process.asmx", "PostWarningFixedData", "data", Pars);
             }
             catch (WebException ex)
             {

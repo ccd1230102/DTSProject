@@ -19,6 +19,7 @@ namespace DTSServer
     // [System.Web.Script.Services.ScriptService]
     public class Process : System.Web.Services.WebService
     {
+        // 客户端上传数据接口
         public class RunningData
         {
             public int ID { get; set; }            // 设备ID
@@ -27,6 +28,41 @@ namespace DTSServer
             public int Count { get; set; }         // 已生产数量
         }
 
+        public class WarningData
+        {
+            public int DeviceID { get; set; }
+            public int WarningID { get; set; }
+            public DateTime OccurTime { get; set; }
+        }
+
+        public class WarningFixedData
+        {
+            public int DeviceID { get; set; }
+            public int WarningDataID { get; set; }
+            public DateTime FixTime { get; set; }
+            public string Treatment { get; set; }
+            public string Result { get; set; }
+            public int FixDuration { get; set; }
+        }
+
+        public class ConsumableList
+        {
+            public int DeviceID { get; set; }
+            public List<int> ConsumableIDs { get; set; }
+            public List<int> UsedTimes { get; set; }
+        }
+
+        public class ConsumableReplaceData
+        {
+            public int DeviceID { get; set; }
+            public int ConsumableID { get; set; }
+            public int UsedTime { get; set; }
+            public DateTime ReplaceTime { get; set; }
+            public string ReplacePeople { get; set; }
+        }
+        // End
+
+        // 客户端下载数据接口
         public class AlarmInfo
         {
             public int ID { get; set; }
@@ -41,6 +77,7 @@ namespace DTSServer
             public string Name { get; set; }
             public int Limit { get; set; }
         }
+        // End
 
         [WebMethod]
         public bool PostRunningData(RunningData data)
@@ -128,6 +165,198 @@ namespace DTSServer
             catch (Exception ex)
             {
                 ret = false;
+            }
+
+            return ret;
+        }
+
+        [WebMethod]
+        public int PostWarningData(WarningData data)
+        {
+            int ret = -1;
+
+            try
+            {
+                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+                SqlConnection sqlConnection = new SqlConnection(conString);
+                sqlConnection.Open();
+
+                SqlCommand cmd = new SqlCommand
+                {
+                    Connection = sqlConnection,
+                    CommandText = "INSERT INTO WarningList(DeviceID, WarningID, OccurTime)VALUES(@para1, @para2, @para3) SELECT @@IDENTITY"
+                };
+                cmd.Parameters.Add("@para1", SqlDbType.Int).Value = data.DeviceID;
+                cmd.Parameters.Add("@para2", SqlDbType.Int).Value = data.WarningID;
+                cmd.Parameters.Add("@para3", SqlDbType.DateTime).Value = data.OccurTime;
+
+                ret = Convert.ToInt32(cmd.ExecuteScalar().ToString());
+
+                sqlConnection.Close();
+            }
+            catch(Exception ex)
+            {
+
+            }
+
+            return ret;
+        }
+
+        [WebMethod]
+        public bool PostWarningFixedData(WarningFixedData data)
+        {
+            bool ret = true;
+
+            try
+            {
+                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+                SqlConnection sqlConnection = new SqlConnection(conString);
+                sqlConnection.Open();
+
+                SqlCommand cmd = new SqlCommand
+                {
+                    Connection = sqlConnection,
+                    CommandText = "UPDATE WarningList SET FixTime=@para1, Treatment=@para2, Result=@para3, FixDuration=@para4 WHERE ID=@para5 AND DeviceID=@para6"
+                };
+                cmd.Parameters.Add("@para1", SqlDbType.DateTime).Value = data.FixTime;
+                cmd.Parameters.Add("@para2", SqlDbType.NVarChar).Value = data.Treatment;
+                cmd.Parameters.Add("@para3", SqlDbType.NVarChar).Value = data.Result;
+                cmd.Parameters.Add("@para4", SqlDbType.Int).Value = data.FixDuration;
+                cmd.Parameters.Add("@para5", SqlDbType.Int).Value = data.WarningDataID;
+                cmd.Parameters.Add("@para6", SqlDbType.Int).Value = data.DeviceID;
+
+                cmd.ExecuteNonQuery();
+
+            sqlConnection.Close();
+            }
+            catch(Exception ex)
+            {
+                ret = false;
+            }
+
+            return ret;
+        }
+
+        [WebMethod]
+        public bool PostConsumableList(ConsumableList list)
+        {
+            bool ret = true;
+
+            try
+            {
+                if (list.ConsumableIDs.Count != list.UsedTimes.Count) return false;
+
+                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+                SqlConnection sqlConnection = new SqlConnection(conString);
+                sqlConnection.Open();
+
+                SqlCommand cmd = new SqlCommand
+                {
+                    Connection = sqlConnection,
+                    CommandText = "SELECT * FROM ConsumableList WHERE DeviceID=@para1"
+                };
+                cmd.Parameters.Add("@para1", SqlDbType.Int).Value = list.DeviceID;
+
+                List<bool> consumableFlag = new List<bool>();
+                for (int i = 0; i < list.ConsumableIDs.Count; ++i)
+                {
+                    consumableFlag.Add(false);
+                }
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    int conID = (int)reader[2];
+                    int idx = list.ConsumableIDs.IndexOf(conID);
+                    if (idx == -1)
+                    {
+                        //need remove
+                        cmd = new SqlCommand
+                        {
+                            Connection = sqlConnection,
+                            CommandText = "DELETE FROM ConsumableList WHERE DeviceID=@para1 AND ConsumableID=@para2"
+                        };
+                        cmd.Parameters.Add("@para1", SqlDbType.Int).Value = list.DeviceID;
+                        cmd.Parameters.Add("@para2", SqlDbType.Int).Value = conID;
+
+                        cmd.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        //need update
+                        cmd = new SqlCommand
+                        {
+                            Connection = sqlConnection,
+                            CommandText = "UPDATE ConsumableList SET UsedTime=@para1 WHERE DeviceID=@para2 AND ConsumableID=@para3"
+                        };
+                        cmd.Parameters.Add("@para1", SqlDbType.Int).Value = list.UsedTimes[idx];
+                        cmd.Parameters.Add("@para2", SqlDbType.Int).Value = list.DeviceID;
+                        cmd.Parameters.Add("@para3", SqlDbType.Int).Value = conID;
+
+                        cmd.ExecuteNonQuery();
+
+                        consumableFlag[idx] = true;
+                    }
+                }
+                reader.Close();
+
+                for (int i = 0; i < list.ConsumableIDs.Count; ++i)
+                {
+                    if(!consumableFlag[i])
+                    {
+                        //need add
+                        cmd = new SqlCommand
+                        {
+                            Connection = sqlConnection,
+                            CommandText = "INSERT INTO ConsumableList(DeviceID, ConsumableID, UsedTime)VALUES(@para1, @para2, @para3)"
+                        };
+                        cmd.Parameters.Add("@para1", SqlDbType.Int).Value = list.DeviceID;
+                        cmd.Parameters.Add("@para2", SqlDbType.Int).Value = list.ConsumableIDs[i];
+                        cmd.Parameters.Add("@para3", SqlDbType.Int).Value = list.UsedTimes[i];
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                sqlConnection.Close();
+            }
+            catch (Exception ex)
+            {
+                ret = false;
+            }
+
+            return ret;
+        }
+
+        [WebMethod]
+        public bool PostConsumableReplaceData(ConsumableReplaceData data)
+        {
+            bool ret = true;
+
+            try
+            {
+                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+                SqlConnection sqlConnection = new SqlConnection(conString);
+                sqlConnection.Open();
+
+                SqlCommand cmd = new SqlCommand
+                {
+                    Connection = sqlConnection,
+                    CommandText = "UPDATE ConsumableList SET UsedTime=@para1, ReplacedTime=@para2, ReplacedPeople=@para3 WHERE DeviceID=@para4 AND ConsumableID=@para5"
+                };
+                cmd.Parameters.Add("@para1", SqlDbType.Int).Value = data.UsedTime;
+                cmd.Parameters.Add("@para2", SqlDbType.DateTime).Value = data.ReplaceTime;
+                cmd.Parameters.Add("@para3", SqlDbType.NVarChar).Value = data.ReplacePeople;
+                cmd.Parameters.Add("@para4", SqlDbType.Int).Value = data.DeviceID;
+                cmd.Parameters.Add("@para5", SqlDbType.Int).Value = data.ConsumableID;
+
+                cmd.ExecuteNonQuery();
+
+                sqlConnection.Close();
+            }
+            catch (Exception ex)
+            {
+
             }
 
             return ret;
