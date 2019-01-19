@@ -184,6 +184,17 @@ namespace DTSServer
                 SqlCommand cmd = new SqlCommand
                 {
                     Connection = sqlConnection,
+                    CommandText = "UPDATE Device SET LastWarningTime=@para1 WHERE ID=@para2"
+                };
+
+                cmd.Parameters.Add("@para1", SqlDbType.DateTime).Value = data.OccurTime;
+                cmd.Parameters.Add("@para2", SqlDbType.Int).Value = data.DeviceID;
+
+                cmd.ExecuteNonQuery();
+
+                cmd = new SqlCommand
+                {
+                    Connection = sqlConnection,
                     CommandText = "INSERT INTO WarningList(DeviceID, WarningID, OccurTime)VALUES(@para1, @para2, @para3) SELECT @@IDENTITY"
                 };
                 cmd.Parameters.Add("@para1", SqlDbType.Int).Value = data.DeviceID;
