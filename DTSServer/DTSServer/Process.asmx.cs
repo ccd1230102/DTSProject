@@ -75,6 +75,7 @@ namespace DTSServer
         {
             public int ID { get; set; }
             public string Name { get; set; }
+            public string Information { get; set; }
             public int Limit { get; set; }
         }
         // End
@@ -93,37 +94,56 @@ namespace DTSServer
                 SqlCommand cmd = new SqlCommand
                 {
                     Connection = sqlConnection,
-                    CommandText = "SELECT COUNT(ID) FROM Device WHERE ID=@para1"
+                    CommandText = "SELECT * FROM Device WHERE ID=@para1"
                 };
                 cmd.Parameters.Add("@para1", SqlDbType.Int).Value = data.ID;
 
-                int count = Convert.ToInt32(cmd.ExecuteScalar().ToString());
-                if (count == 1)
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
                 {
                     switch (data.Status)
                     {
                         case 0:
+                            long ZeroFaultTime = (long)reader[4];
+                            DateTime lastOperationTime = (DateTime)reader[5];
+                            DateTime lastWarningTime = (DateTime)reader[6];
+                            DateTime curTime = DateTime.Now;
+
+                            if (lastWarningTime <= lastOperationTime)
+                            {
+                                ZeroFaultTime += (long)curTime.Subtract(lastOperationTime).TotalSeconds;
+                            } 
+                            else
+                            {
+                                ZeroFaultTime += (long)lastWarningTime.Subtract(lastOperationTime).TotalSeconds;
+                            }
+
+                            reader.Close();
                             cmd = new SqlCommand
                             {
                                 Connection = sqlConnection,
-                                CommandText = "UPDATE Device SET Running=@para1, LastOperationTime=@para2 WHERE ID=@para3"
+                                CommandText = "UPDATE Device SET Running=0, ZeroFaultTime=@para1, LastOperationTime=@para2 WHERE ID=@para3"
                             };
-                            cmd.Parameters.Add("@para1", SqlDbType.Bit).Value = false;
-                            cmd.Parameters.Add("@para2", SqlDbType.DateTime).Value = DateTime.Now;
+                            cmd.Parameters.Add("@para1", SqlDbType.Float).Value = ZeroFaultTime;
+                            cmd.Parameters.Add("@para2", SqlDbType.DateTime).Value = curTime;
                             cmd.Parameters.Add("@para3", SqlDbType.Int).Value = data.ID;
                             break;
                         case 1:
+                            reader.Close();
+
                             cmd = new SqlCommand
                             {
                                 Connection = sqlConnection,
-                                CommandText = "UPDATE Device SET Running=@para1, Shift=@para2, Count=0, LastOperationTime=@para3, LastWarningTime=@para3 WHERE ID=@para4"
+                                CommandText = "UPDATE Device SET Running=1, Shift=@para1, Count=0, LastOperationTime=@para2 WHERE ID=@para3"
                             };
-                            cmd.Parameters.Add("@para1", SqlDbType.Bit).Value = true;
-                            cmd.Parameters.Add("@para2", SqlDbType.NVarChar).Value = data.Shift;
-                            cmd.Parameters.Add("@para3", SqlDbType.DateTime).Value = DateTime.Now;
-                            cmd.Parameters.Add("@para4", SqlDbType.Int).Value = data.ID;
+                            cmd.Parameters.Add("@para1", SqlDbType.NVarChar).Value = data.Shift;
+                            cmd.Parameters.Add("@para2", SqlDbType.DateTime).Value = DateTime.Now;
+                            cmd.Parameters.Add("@para3", SqlDbType.Int).Value = data.ID;
                             break;
                         case 2:
+                            reader.Close();
+
                             cmd = new SqlCommand
                             {
                                 Connection = sqlConnection,
@@ -137,6 +157,8 @@ namespace DTSServer
                 }
                 else
                 {
+                    reader.Close();
+
                     if (data.Status != 1)
                     {
                         ret = false;
@@ -146,16 +168,14 @@ namespace DTSServer
                         cmd = new SqlCommand
                         {
                             Connection = sqlConnection,
-                            CommandText = "INSERT INTO Device(ID, Running, Shift, Count, LastOperationTime, LastWarningTime)VALUES(@para1, @para2, @para3, @para4, @para5, @para6)"
+                            CommandText = "INSERT INTO Device(ID, Running, Shift, Count, ZeroFaultTime, LastOperationTime, LastWarningTime)VALUES(@para1, 1, @para2, 0, 0, @para3, @para4)"
                         };
                         cmd.Parameters.Add("@para1", SqlDbType.Int).Value = data.ID;
-                        cmd.Parameters.Add("@para2", SqlDbType.Bit).Value = true;
-                        cmd.Parameters.Add("@para3", SqlDbType.NVarChar).Value = data.Shift;
-                        cmd.Parameters.Add("@para4", SqlDbType.Int).Value = 0;
+                        cmd.Parameters.Add("@para2", SqlDbType.NVarChar).Value = data.Shift;
 
                         DateTime curDataTime = DateTime.Now;
-                        cmd.Parameters.Add("@para5", SqlDbType.DateTime).Value = curDataTime;
-                        cmd.Parameters.Add("@para6", SqlDbType.DateTime).Value = curDataTime;
+                        cmd.Parameters.Add("@para3", SqlDbType.DateTime).Value = curDataTime;
+                        cmd.Parameters.Add("@para4", SqlDbType.DateTime).Value = curDataTime;
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -274,6 +294,8 @@ namespace DTSServer
                     consumableFlag.Add(false);
                 }
 
+                List<int> consumableRemoveList = new List<int>();
+
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -281,35 +303,28 @@ namespace DTSServer
                     int idx = list.ConsumableIDs.IndexOf(conID);
                     if (idx == -1)
                     {
-                        //need remove
-                        cmd = new SqlCommand
-                        {
-                            Connection = sqlConnection,
-                            CommandText = "DELETE FROM ConsumableList WHERE DeviceID=@para1 AND ConsumableID=@para2"
-                        };
-                        cmd.Parameters.Add("@para1", SqlDbType.Int).Value = list.DeviceID;
-                        cmd.Parameters.Add("@para2", SqlDbType.Int).Value = conID;
-
-                        cmd.ExecuteNonQuery();
+                        consumableRemoveList.Add(conID);
                     }
                     else
                     {
-                        //need update
-                        cmd = new SqlCommand
-                        {
-                            Connection = sqlConnection,
-                            CommandText = "UPDATE ConsumableList SET UsedTime=@para1 WHERE DeviceID=@para2 AND ConsumableID=@para3"
-                        };
-                        cmd.Parameters.Add("@para1", SqlDbType.Int).Value = list.UsedTimes[idx];
-                        cmd.Parameters.Add("@para2", SqlDbType.Int).Value = list.DeviceID;
-                        cmd.Parameters.Add("@para3", SqlDbType.Int).Value = conID;
-
-                        cmd.ExecuteNonQuery();
-
                         consumableFlag[idx] = true;
                     }
                 }
                 reader.Close();
+
+                for (int i = 0; i < consumableRemoveList.Count; ++i)
+                {
+                    //need remove
+                    cmd = new SqlCommand
+                    {
+                        Connection = sqlConnection,
+                        CommandText = "DELETE FROM ConsumableList WHERE DeviceID=@para1 AND ConsumableID=@para2"
+                    };
+                    cmd.Parameters.Add("@para1", SqlDbType.Int).Value = list.DeviceID;
+                    cmd.Parameters.Add("@para2", SqlDbType.Int).Value = consumableRemoveList[i];
+
+                    cmd.ExecuteNonQuery();
+                }
 
                 for (int i = 0; i < list.ConsumableIDs.Count; ++i)
                 {
@@ -324,6 +339,20 @@ namespace DTSServer
                         cmd.Parameters.Add("@para1", SqlDbType.Int).Value = list.DeviceID;
                         cmd.Parameters.Add("@para2", SqlDbType.Int).Value = list.ConsumableIDs[i];
                         cmd.Parameters.Add("@para3", SqlDbType.Int).Value = list.UsedTimes[i];
+
+                        cmd.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        //need update
+                        cmd = new SqlCommand
+                        {
+                            Connection = sqlConnection,
+                            CommandText = "UPDATE ConsumableList SET UsedTime=@para1 WHERE DeviceID=@para2 AND ConsumableID=@para3"
+                        };
+                        cmd.Parameters.Add("@para1", SqlDbType.Int).Value = list.UsedTimes[i];
+                        cmd.Parameters.Add("@para2", SqlDbType.Int).Value = list.DeviceID;
+                        cmd.Parameters.Add("@para3", SqlDbType.Int).Value = list.ConsumableIDs[i]; ;
 
                         cmd.ExecuteNonQuery();
                     }
@@ -439,7 +468,8 @@ namespace DTSServer
                     {
                         ID = (int)reader[0],
                         Name = (string)reader[1],
-                        Limit = (int)reader[2]
+                        Information = (string)reader[2],
+                        Limit = (int)reader[3]
                     };
 
                     ret.Add(info1);

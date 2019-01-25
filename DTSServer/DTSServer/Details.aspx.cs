@@ -46,11 +46,25 @@ namespace DTSServer
                     bool status = (bool)reader[1];
 
                     DateTime curTime = DateTime.Now;
-                    DateTime lastOperationTime = (DateTime)reader[4];
-                    DateTime lastWarningTime = (DateTime)reader[5];
+                    DateTime lastOperationTime = (DateTime)reader[5];
+                    DateTime lastWarningTime = (DateTime)reader[6];
+
+                    long zeroFaultTime = (long)reader[4];
 
                     TimeSpan operationTimeSpan = curTime.Subtract(lastOperationTime);
-                    TimeSpan zeroWarningTimeSpan = curTime.Subtract(lastWarningTime);
+                    TimeSpan zeroWarningTimeSpan = TimeSpan.FromSeconds(zeroFaultTime);
+
+                    if (status)
+                    {
+                        if (lastWarningTime <= lastOperationTime)
+                        {
+                            zeroWarningTimeSpan += curTime.Subtract(lastOperationTime);
+                        }
+                        else
+                        {
+                            zeroWarningTimeSpan += lastWarningTime.Subtract(lastOperationTime);
+                        }
+                    }
 
                     string operationTimeSpanStr = operationTimeSpan.Hours + "小时" + operationTimeSpan.Minutes + "分" + operationTimeSpan.Seconds + "秒";
                     string zeroWarningTimeSpanStr = zeroWarningTimeSpan.Hours + "小时" + zeroWarningTimeSpan.Minutes + "分" + zeroWarningTimeSpan.Seconds + "秒";
@@ -59,9 +73,9 @@ namespace DTSServer
                     this.Label2.Text = status ? (string)reader[2] : "";
                     this.Label3.Text = status ? reader[3].ToString() : "0";
                     this.Label4.Text = status ? operationTimeSpanStr : "";
-                    this.Label5.Text = status ? zeroWarningTimeSpanStr : "";
+                    this.Label5.Text = zeroWarningTimeSpanStr;
                     this.Label6.Text = !status ? operationTimeSpanStr : "";
-                    this.Label7.Text = status ? "运行中" : "已停机";
+                    this.Label7.Text = status ? (lastWarningTime <= lastOperationTime ? "运行中" : "发生警告") : "已停机";
                 }
                 reader.Close();
 

@@ -48,6 +48,7 @@ create table Device
 	Running bit not null,
     Shift nvarchar(18) not null,
     Count int not null,
+	ZeroFaultTime bigint not null,
 	LastOperationTime DateTime not null,
 	LastWarningTime DateTime not null
 )
