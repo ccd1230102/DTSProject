@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +34,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\..\..\..\Program Files\System.Data.SQLite\2015\bin\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
@@ -44,20 +48,83 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlarmDataDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AlarmDataDialog.Designer.cs">
+      <DependentUpon>AlarmDataDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ConsumableChange.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConsumableChange.Designer.cs">
+      <DependentUpon>ConsumableChange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ConsumableDetail.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConsumableDetail.Designer.cs">
+      <DependentUpon>ConsumableDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ConsumableMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConsumableMain.Designer.cs">
+      <DependentUpon>ConsumableMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseHandle.cs" />
     <Compile Include="DTS.cs" />
+    <Compile Include="AlarmDetailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AlarmDetailForm.Designer.cs">
+      <DependentUpon>AlarmDetailForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PostToSever.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="RunningDataDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="RunningDataDialog.Designer.cs">
       <DependentUpon>RunningDataDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="SQLite.cs" />
     <Compile Include="WebServiceHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AlarmDataDialog.resx">
+      <DependentUpon>AlarmDataDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AlarmDetailForm.resx">
+      <DependentUpon>AlarmDetailForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConsumableChange.resx">
+      <DependentUpon>ConsumableChange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConsumableDetail.resx">
+      <DependentUpon>ConsumableDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConsumableMain.resx">
+      <DependentUpon>ConsumableMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="RunningDataDialog.resx">
       <DependentUpon>RunningDataDialog.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LiteIcon_128px_1096472_easyicon.net.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

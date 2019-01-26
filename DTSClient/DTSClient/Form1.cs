@@ -22,40 +22,58 @@ namespace DTSClient
             InitializeComponent();
 
             mDTSManager = new DTSManager("config.xml");
-            mDTSManager.Start();
+            mDTSManager.Start("xxx");
         }
 
         private void Button_running_data_Click(object sender, EventArgs e)
         {
-            mDTSManager.ShowRunningDataDialog();
+            mDTSManager.Start("666");
         }
 
         private void Button_upload_Click(object sender, EventArgs e)
         {
+            mDTSManager.ShowRunningDataDialog();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
             Hashtable Pars = new Hashtable
             {
-                // For start
-                { "ID", 1 },
-                { "Shift", "测试" },
-                { "Status", 1 },
-                { "Count", 0 }
-                //
-
-                /* For running
-                { "ID", 1 },
-                { "Shift", "测试" },
-                { "Status", 2 },
-                { "Count", 100 }
-                */
-
-                /* For stop
-                { "ID", 1 },
-                { "Shift", "测试" },
-                { "Status", 0 },
-                { "Count", 0 }
-                */
+                { "TYPE", "Produce"},
+                { "Count", 1 }
             };
             mDTSManager.UpdateRunningData(Pars);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Hashtable Pars = new Hashtable
+            {
+                { "TYPE", "Alarm"},
+                { "AlarmID", 1 },
+                { "AlarmName", 1 },
+            };
+            mDTSManager.ReportAlarmInfo(Pars);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            mDTSManager.Stop();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            mDTSManager.Stop();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            mDTSManager.ShowAlarmInfoDialog();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            mDTSManager.ShowConsumableInfoDialog();
         }
     }
 }
