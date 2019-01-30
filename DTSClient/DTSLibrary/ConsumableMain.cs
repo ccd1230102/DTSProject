@@ -29,8 +29,10 @@ namespace DTSLibrary
         private bool m_bFormShow = false;
         private ConsumableChange ConsumableChangedlg = null;
 
+        static object locker = new object();
+
         private void TimeThread(object source, System.Timers.ElapsedEventArgs e)
-        {//定时查询数据库更新易损件的使用时间
+        {//定时查询数据库更新易损件的使用时间 
             string EXEPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
             string dbPath = EXEPath + "Demo.db3";
             SQLiteDBHelper db = new SQLiteDBHelper(dbPath);
@@ -55,7 +57,7 @@ namespace DTSLibrary
             {
                 XmlNodeList ConsumableNode = node.ChildNodes;
                 string ConsumableID = ((XmlElement)ConsumableNode[0]).InnerText;
-                ids.Add(Convert.ToInt32(ConsumableID));
+                
                 string ConsumableName = ((XmlElement)ConsumableNode[1]).InnerText;
                 string stLifetime = ((XmlElement)ConsumableNode[3]).InnerText;
 
@@ -75,12 +77,16 @@ namespace DTSLibrary
                     }
                 }
                 int nWorkingTime = Convert.ToInt32(stWorkingTime)+1;
-                times.Add(nWorkingTime);
+                //if(nWorkingTime%60 == 0)
+                {
+                    ids.Add(Convert.ToInt32(ConsumableID));
+                    times.Add(nWorkingTime/60);
+                }
                 string sql2 = "UPDATE ConsumableLog SET WorkingTime = WorkingTime+1 where id = " + stID;
 
                 db.ExecuteNonQuery(sql2, null);
 
-                if(nWorkingTime > Convert.ToInt32(stLifetime))
+                if(nWorkingTime >= Convert.ToInt32(stLifetime))
                 {
                     if (ConsumableChangedlg == null)
                     { 
@@ -95,7 +101,7 @@ namespace DTSLibrary
                 }
             }
 
-            ChangeListview();//刷新listview
+            ChangeListview(true);//刷新listview
 
             DTSManager.PostSever.PostConsumableData(ids, times);//发送易损件运行时间更新到server    
 
@@ -149,7 +155,7 @@ namespace DTSLibrary
         {
             //到时间的时候执行事件  
             aTimer.Elapsed += new System.Timers.ElapsedEventHandler(TimeThread);
-            aTimer.Interval = 5*1000;
+            aTimer.Interval = 60 * 1000;
             aTimer.AutoReset = true;//执行一次 false，一直执行true  
             //是否执行System.Timers.Timer.Elapsed事件  
             aTimer.Enabled = true;
@@ -157,8 +163,9 @@ namespace DTSLibrary
 
         private void ConsumableMain_Shown(object sender, EventArgs e)
         {
-            m_bFormShow = true; 
-            ChangeListview();
+            m_bFormShow = true;
+            ConsumablelistView.Items.Clear();
+            ChangeListview(false);
             
         }  
 
@@ -168,67 +175,83 @@ namespace DTSLibrary
             this.Hide();
         }
 
-        private void ChangeListview()
+        private void ChangeListview(bool bRefresh)
         {//查询数据库，将信息显示到Listview上
-            ConsumablelistView.Items.Clear();
+            lock (locker)
+            {                               
+                string EXEPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+                string dbPath = EXEPath + "Demo.db3";
+                SQLiteDBHelper db = new SQLiteDBHelper(dbPath);
 
-            string EXEPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-            string dbPath = EXEPath + "Demo.db3";
-            SQLiteDBHelper db = new SQLiteDBHelper(dbPath);
-
-            XmlDocument XMLalarmInfo = new XmlDocument();
-            XMLalarmInfo.Load(EXEPath + "ConsumableInfoConfig.xml");
-            XmlElement el = XMLalarmInfo.DocumentElement;
-            XmlNodeList ConsumableInfoNodes = el.GetElementsByTagName("ConsumableInfo");
-
-            foreach (XmlNode node in ConsumableInfoNodes)
-            {
-                XmlNodeList ConsumableNode = node.ChildNodes;
-                string ConsumableID = ((XmlElement)ConsumableNode[0]).InnerText;
-                string ConsumableName = ((XmlElement)ConsumableNode[1]).InnerText;
-                string stLifetime = ((XmlElement)ConsumableNode[3]).InnerText;
-
-                string sql3 = "select max(id), WorkingTime, Changetime from ConsumableLog where ConsumableID = " + ConsumableID;
-
-                string stID = "";
-                string stWorkingTime = "";
-                string stChangeDate = "";
-                using (SQLiteDataReader reader = db.ExecuteReader(sql3, null))
+                XmlDocument XMLalarmInfo = new XmlDocument();
+                XMLalarmInfo.Load(EXEPath + "ConsumableInfoConfig.xml");
+                XmlElement el = XMLalarmInfo.DocumentElement;
+                XmlNodeList ConsumableInfoNodes = el.GetElementsByTagName("ConsumableInfo");
+                int Count = 0;
+                foreach (XmlNode node in ConsumableInfoNodes)
                 {
-                    while (reader.Read())
-                    {
-                        stID = reader["max(id)"].ToString();
-                        stWorkingTime = reader["WorkingTime"].ToString();
-                        stChangeDate = reader["Changetime"].ToString();
-                    }
-                }
-                //int nWorkingTime = Convert.ToInt32(stWorkingTime) + 1;
+                    XmlNodeList ConsumableNode = node.ChildNodes;
+                    string ConsumableID = ((XmlElement)ConsumableNode[0]).InnerText;
+                    string ConsumableName = ((XmlElement)ConsumableNode[1]).InnerText;
+                    string stLifetime = ((XmlElement)ConsumableNode[3]).InnerText;
+                    stLifetime = stLifetime + "(" +(Convert.ToInt32(stLifetime)*60).ToString() + "分钟)";
 
-                if (m_bFormShow)
-                {               
-                    ListViewItem item1 = new ListViewItem(ConsumableID);
-                    item1.SubItems.Add(ConsumableName);
-                    item1.SubItems.Add(stLifetime);
-                    item1.SubItems.Add(stChangeDate);
-                    item1.SubItems.Add(stWorkingTime);
-                    ConsumablelistView.Items.Add(item1);
+                    string sql3 = "select max(id), WorkingTime, Changetime from ConsumableLog where ConsumableID = " + ConsumableID;
+
+                    string stID = "";
+                    string stWorkingTime = "";
+                    string stChangeDate = "";
+                    using (SQLiteDataReader reader = db.ExecuteReader(sql3, null))
+                    {
+                        while (reader.Read())
+                        {
+                            stID = reader["max(id)"].ToString();
+                            stWorkingTime = reader["WorkingTime"].ToString();
+                            stChangeDate = reader["Changetime"].ToString();
+                        }
+                    }
+                    if (m_bFormShow)
+                    {
+                        if (bRefresh)
+                        { 
+                            ConsumablelistView.Items[Count].SubItems[4].Text = stWorkingTime;
+                        }
+                        else
+                        {
+                            ListViewItem item1 = new ListViewItem(ConsumableID);
+                            item1.SubItems.Add(ConsumableName);
+                            item1.SubItems.Add(stLifetime);
+                            item1.SubItems.Add(stChangeDate);
+                            item1.SubItems.Add(stWorkingTime);
+                            ConsumablelistView.Items.Add(item1);
+                        }
+                    }
+                    Count++;
+
                 }
             }
         }
 
         private void ConsumablelistView_DoubleClick(object sender, EventArgs e)
         {
-            string stConsumableID = ConsumablelistView.SelectedItems[0].Text;
+            string stConsumableID="";
 
-            if (!string.IsNullOrEmpty(stConsumableID))
-            {
-                ConsumableDetail dlg = new ConsumableDetail(stConsumableID)
+            lock(locker)
+            { 
+                if(ConsumablelistView.Items.Count>0)
                 {
-                    StartPosition = FormStartPosition.CenterParent
-                };
-                dlg.ShowDialog();
+                    stConsumableID = ConsumablelistView.SelectedItems[0].Text;
+                }
+                if (!string.IsNullOrEmpty(stConsumableID))
+                {
+                    ConsumableDetail dlg = new ConsumableDetail(stConsumableID)
+                    {
+                        StartPosition = FormStartPosition.CenterParent
+                    };
+                    dlg.ShowDialog();
 
-                dlg.Dispose();
+                    dlg.Dispose();
+                }
             }
         }
 

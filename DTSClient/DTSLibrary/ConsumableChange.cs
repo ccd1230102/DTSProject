@@ -51,7 +51,8 @@ namespace DTSLibrary
                 {
                     m_stConsumableName = reader["ConsumableName"].ToString();
                     m_stLifetime = reader["Lifetime"].ToString();
-                    m_stWorkingTime = reader["WorkingTime"].ToString();
+                    m_stLifetime = (Convert.ToInt32(m_stLifetime) / 60).ToString() + "小时(" + m_stLifetime + "分钟)";
+                    m_stWorkingTime = reader["WorkingTime"].ToString() + "分钟";
                     m_stChangetime = reader["Changetime"].ToString();
 
                     IDtextBox.Text = stConsumableID;
@@ -103,6 +104,8 @@ namespace DTSLibrary
             string dbPath = EXEPath + "Demo.db3";
             SQLiteDBHelper db = new SQLiteDBHelper(dbPath);
 
+            int nLifetime = Convert.ToInt32(m_stLifetime)*60;
+
             string sql2 = "INSERT INTO ConsumableLog(datetime,ConsumableID,ConsumableName,Lifetime,WorkingTime,Changetime,ChangePeopleName,Remarks)" +
                   "values(@datetime,@ConsumableID,@ConsumableName,@Lifetime,@WorkingTime,@Changetime,@ChangePeopleName,@Remarks)";
 
@@ -111,7 +114,7 @@ namespace DTSLibrary
                         new SQLiteParameter("@datetime",DateTime.Now),
                         new SQLiteParameter("@ConsumableID",m_stConsumableID),
                         new SQLiteParameter("@ConsumableName",m_stConsumableName),
-                        new SQLiteParameter("@Lifetime",m_stLifetime),
+                        new SQLiteParameter("@Lifetime",nLifetime),
                         new SQLiteParameter("@WorkingTime","0"),
                         new SQLiteParameter("@Changetime",CurrentDatetime),
                         new SQLiteParameter("@ChangePeopleName",PeopletextBox.Text),

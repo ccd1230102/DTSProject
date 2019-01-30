@@ -74,7 +74,8 @@ namespace DTSLibrary
                     stConsumableName = reader["ConsumableName"].ToString();
                     stConsumableInfo = reader["ConsumableInfo"].ToString();
                     stLifetime = reader["Lifetime"].ToString();
-                    stWorkingTime = reader["WorkingTime"].ToString();
+                    stLifetime = (Convert.ToInt32(stLifetime) / 60).ToString() + "小时(" + stLifetime + "分钟)";
+                    stWorkingTime = reader["WorkingTime"].ToString() + "分钟";
                     stChangetime = reader["Changetime"].ToString();
                     stChangePeopleName = reader["ChangePeopleName"].ToString();
                     stRemarks = reader["Remarks"].ToString();

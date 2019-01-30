@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Forms;
 using System.Data;
 using System.Data.Common;
 using System.Data.SQLite;
@@ -29,48 +29,58 @@ namespace DTSLibrary
         }
         public static void InitConsumableRecord()
         {
-            string EXEPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-            string dbPath = EXEPath + "Demo.db3";
-            SQLiteDBHelper db = new SQLiteDBHelper(dbPath);
-
-            XmlDocument XMLalarmInfo = new XmlDocument();
-            XMLalarmInfo.Load(EXEPath + "ConsumableInfoConfig.xml");
-            XmlElement el = XMLalarmInfo.DocumentElement;
-            XmlNodeList ConsumableInfoNodes = el.GetElementsByTagName("ConsumableInfo");
-
-            foreach (XmlNode node in ConsumableInfoNodes)
+            try
             {
-                XmlNodeList ConsumableNode = node.ChildNodes;
-                string ConsumableID = ((XmlElement)ConsumableNode[0]).InnerText;
-                string ConsumableName = ((XmlElement)ConsumableNode[1]).InnerText;
-                string stLifetime = ((XmlElement)ConsumableNode[3]).InnerText;
-                bool bIsInit = false;
+                string EXEPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+                string dbPath = EXEPath + "Demo.db3";
+                SQLiteDBHelper db = new SQLiteDBHelper(dbPath);
 
-                string sql1 = "select * from ConsumableLog where ConsumableID = " + ConsumableID;
-                using (SQLiteDataReader reader = db.ExecuteReader(sql1, null))
+                XmlDocument XMLalarmInfo = new XmlDocument();
+                XMLalarmInfo.Load(EXEPath + "ConsumableInfoConfig.xml");
+                XmlElement el = XMLalarmInfo.DocumentElement;
+                XmlNodeList ConsumableInfoNodes = el.GetElementsByTagName("ConsumableInfo");
+
+                foreach (XmlNode node in ConsumableInfoNodes)
                 {
-                    while (reader.Read())
+                    XmlNodeList ConsumableNode = node.ChildNodes;
+                    string ConsumableID = ((XmlElement)ConsumableNode[0]).InnerText;
+                    string ConsumableName = ((XmlElement)ConsumableNode[1]).InnerText;
+                    string stLifetime = ((XmlElement)ConsumableNode[3]).InnerText;
+                    int nLifetime = Convert.ToInt32(stLifetime);
+                    nLifetime = nLifetime * 60;
+                    bool bIsInit = false;
+
+                    string sql1 = "select * from ConsumableLog where ConsumableID = " + ConsumableID;
+                    using (SQLiteDataReader reader = db.ExecuteReader(sql1, null))
                     {
-                        bIsInit = true;
+                        while (reader.Read())
+                        {
+                            bIsInit = true;
+                        }
                     }
-                }
 
-                if(!bIsInit)
-                {
-                    string sql2 = "INSERT INTO ConsumableLog(datetime,ConsumableID,ConsumableName,Lifetime,WorkingTime,Changetime,ChangePeopleName)" +
-                                     "values(@datetime,@ConsumableID,@ConsumableName,@Lifetime,@WorkingTime,@Changetime,@ChangePeopleName)";
-                    SQLiteParameter[] parameters = new SQLiteParameter[]{
-                            new SQLiteParameter("@datetime",DateTime.Now),
+                    if (!bIsInit)
+                    {
+                        DateTime Now = DateTime.Now;
+                        string sql2 = "INSERT INTO ConsumableLog(datetime,ConsumableID,ConsumableName,Lifetime,WorkingTime,Changetime,ChangePeopleName)" +
+                                         "values(@datetime,@ConsumableID,@ConsumableName,@Lifetime,@WorkingTime,@Changetime,@ChangePeopleName)";
+                        SQLiteParameter[] parameters = new SQLiteParameter[]{
+                            new SQLiteParameter("@datetime",Now),
                             new SQLiteParameter("@ConsumableID",ConsumableID),
                             new SQLiteParameter("@ConsumableName",ConsumableName),
-                            new SQLiteParameter("@Lifetime",stLifetime),
+                            new SQLiteParameter("@Lifetime",nLifetime),
                             new SQLiteParameter("@WorkingTime","0"),
-                            new SQLiteParameter("@Changetime",DateTime.Now),
-                            new SQLiteParameter("@ChangePeopleName","Init")
-                    };
-                    db.ExecuteNonQuery(sql2, parameters);
+                            new SQLiteParameter("@Changetime",Now),
+                            new SQLiteParameter("@ChangePeopleName","初始")
+                        };
+                        db.ExecuteNonQuery(sql2, parameters);
+                        DTSManager.PostSever.PostConsumableReplaceData("初始", Convert.ToInt32(ConsumableID), 0, Now.ToString());
+                    }             
                 }
-
+            }
+            catch (XmlException ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
         public static void RecordStartToDB(bool bPost)

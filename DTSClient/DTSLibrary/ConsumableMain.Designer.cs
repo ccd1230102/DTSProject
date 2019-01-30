@@ -75,7 +75,7 @@
             // 
             // columnHeader5
             // 
-            this.columnHeader5.Text = "已运行时间（小时）";
+            this.columnHeader5.Text = "已运行时间（分钟）";
             this.columnHeader5.Width = 152;
             // 
             // ConsumableMain

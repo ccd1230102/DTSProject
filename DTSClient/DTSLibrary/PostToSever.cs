@@ -110,7 +110,7 @@ namespace DTSLibrary
             }
             catch (WebException ex)
             {
-
+                MessageBox.Show(ex.Message);
             }
         }
 

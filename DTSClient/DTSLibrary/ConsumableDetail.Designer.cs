@@ -69,7 +69,7 @@
             // 
             // columnHeader3
             // 
-            this.columnHeader3.Text = "易损件寿命（小时）";
+            this.columnHeader3.Text = "易损件寿命";
             this.columnHeader3.Width = 154;
             // 
             // columnHeader4
@@ -79,7 +79,7 @@
             // 
             // columnHeader5
             // 
-            this.columnHeader5.Text = "已运行时间（小时）";
+            this.columnHeader5.Text = "已运行时间";
             this.columnHeader5.Width = 152;
             // 
             // columnHeader6
@@ -110,7 +110,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.ConsumableDetaillistView);
             this.Name = "ConsumableDetail";
-            this.Text = "易损件更换详细信息";
+            this.Text = "易损件更换记录";
             this.Shown += new System.EventHandler(this.ConsumableDetail_Shown);
             this.ResumeLayout(false);
 

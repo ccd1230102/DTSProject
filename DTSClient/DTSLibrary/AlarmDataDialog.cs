@@ -91,7 +91,7 @@ namespace DTSLibrary
         {
             //到时间的时候执行事件  
             aTimer.Elapsed += new System.Timers.ElapsedEventHandler(TimeThread);
-            aTimer.Interval = 1 * 10 * 1000;
+            aTimer.Interval = 60 * 1000;
             aTimer.AutoReset = true;//执行一次 false，一直执行true  
             //是否执行System.Timers.Timer.Elapsed事件  
             aTimer.Enabled = true;
@@ -103,6 +103,7 @@ namespace DTSLibrary
             string dbPath = EXEPath + "Demo.db3";
             string sql = "select * from AlarmLog";
             SQLiteDBHelper db = new SQLiteDBHelper(dbPath);
+            AlarmlistView.Items.Clear();
 
             using (SQLiteDataReader reader = db.ExecuteReader(sql, null))
             {
