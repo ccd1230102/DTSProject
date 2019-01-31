@@ -59,13 +59,13 @@ namespace DTSLibrary
                 string ConsumableID = ((XmlElement)ConsumableNode[0]).InnerText;
                 
                 string ConsumableName = ((XmlElement)ConsumableNode[1]).InnerText;
-                string stLifetime = ((XmlElement)ConsumableNode[3]).InnerText;
+                //string stLifetime = ((XmlElement)ConsumableNode[3]).InnerText;
 
-                string sql3 = "select max(id), WorkingTime, Changetime from ConsumableLog where ConsumableID = " + ConsumableID;
+                string sql3 = "select max(id), WorkingTime, Lifetime from ConsumableLog where ConsumableID = " + ConsumableID;
 
                 string stID = "";
                 string stWorkingTime = "";
-                string stChangeDate = "";
+                string stLifetime = "";
 
                 using (SQLiteDataReader reader = db.ExecuteReader(sql3, null))
                 {
@@ -73,7 +73,7 @@ namespace DTSLibrary
                     {
                         stID = reader["max(id)"].ToString();
                         stWorkingTime = reader["WorkingTime"].ToString();
-                        stChangeDate = reader["Changetime"].ToString();
+                        stLifetime = reader["Lifetime"].ToString();
                     }
                 }
                 int nWorkingTime = Convert.ToInt32(stWorkingTime)+1;
