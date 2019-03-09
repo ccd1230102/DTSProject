@@ -86,6 +86,10 @@ namespace DTSServer
                 {
                     this.Empty_Card.Visible = true;
                 }
+                else
+                {
+                    this.Empty_Card.Visible = false;
+                }
 
                 this.WarningGridView.DataSource = myds;
                 this.WarningGridView.DataBind();

@@ -102,6 +102,10 @@ namespace DTSServer
                 {
                     this.Empty_Card.Visible = true;
                 }
+                else
+                {
+                    this.Empty_Card.Visible = false;
+                }
 
                 this.Repeater1.DataSource = dt;
                 this.Repeater1.DataBind();

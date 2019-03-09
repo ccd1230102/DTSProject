@@ -39,6 +39,7 @@ namespace DTSServer
 
                 if (dt.Rows.Count != 0)
                 {
+                    this.Empty_Card.Visible = false;
                     this.WarningGridView.HeaderRow.TableSection = TableRowSection.TableHeader;
                 }
                 else

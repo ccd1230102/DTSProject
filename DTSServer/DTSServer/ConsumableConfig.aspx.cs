@@ -38,6 +38,7 @@ namespace DTSServer
 
                 if (dt.Rows.Count != 0)
                 {
+                    this.Empty_Card.Visible = false;
                     this.ConsumableGridView.HeaderRow.TableSection = TableRowSection.TableHeader;
                 }
                 else

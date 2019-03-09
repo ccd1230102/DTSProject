@@ -84,6 +84,10 @@ namespace DTSServer
                 {
                     this.Empty_Card1.Visible = true;
                 }
+                else
+                {
+                    this.Empty_Card1.Visible = false;
+                }
 
                 this.ConsumableGridView.DataSource = myds;
                 this.ConsumableGridView.DataBind();
@@ -105,6 +109,10 @@ namespace DTSServer
                 if (myds.Rows.Count == 0)
                 {
                     this.Empty_Card2.Visible = true;
+                }
+                else
+                {
+                    this.Empty_Card2.Visible = false;
                 }
 
                 this.ConsumableReplaceGridView.DataSource = myds;
