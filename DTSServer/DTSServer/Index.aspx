@@ -93,6 +93,7 @@
                             <div class="card-body">
                                 <h4 class="card-title">设备列表为空</h4>
                                 <p class="card-text">当前无法找到任何设备。</p>
+                                <p id="Error_Text" class="card-text" runat="server" style="color:red;"/>
                             </div>
                         </div>
                     </div>

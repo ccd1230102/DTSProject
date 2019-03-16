@@ -34,6 +34,9 @@ namespace DTSServer
 
         private void Bind()
         {
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
+
             try
             {
                 string dateFromString = Request.QueryString["from"] != null ? Request.QueryString["from"] : "";
@@ -63,9 +66,7 @@ namespace DTSServer
                 this.Nav_LinkButton13.Attributes["href"] = "ConsumableDetails.aspx?" + GetURLParameters();
 
                 DataTable dt = new DataTable("datatable");
-
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
+                
                 sqlConnection.Open();
 
                 SqlCommand cmd = new SqlCommand
@@ -197,6 +198,8 @@ namespace DTSServer
             }
             catch (Exception ex)
             {
+                sqlConnection.Close();
+
                 this.Empty_Card.Visible = true;
             }
         }

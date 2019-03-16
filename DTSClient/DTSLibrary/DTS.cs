@@ -103,7 +103,7 @@ namespace DTSLibrary
 
             try
             {
-                XmlDocument alarmInfoConfig = WebServiceHelper.QueryPostWebService(serverIP + "/Process.asmx", "GetAlarmInfoConfigration", new Hashtable());
+                XmlDocument alarmInfoConfig = WebServiceHelper.QuerySoapWebService(serverIP + "/Process.asmx", "GetAlarmInfoConfigration");
                 string EXEPath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
                 alarmInfoConfig.Save((EXEPath + "alarmInfoConfig.xml"));        
             }
@@ -114,7 +114,7 @@ namespace DTSLibrary
 
             try
             {
-                XmlDocument alarmInfoConfig = WebServiceHelper.QueryPostWebService(serverIP + "/Process.asmx", "GetConsumableInfoConfigration", new Hashtable());
+                XmlDocument alarmInfoConfig = WebServiceHelper.QuerySoapWebService(serverIP + "/Process.asmx", "GetConsumableInfoConfigration");
                 alarmInfoConfig.Save(Application.StartupPath + "\\ConsumableInfoConfig.xml");
             }
             catch (WebException ex)

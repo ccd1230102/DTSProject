@@ -24,6 +24,9 @@ namespace DTSServer
 
         private void Bind()
         {
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
+
             try
             {
                 mNowTime = DateTime.Now.ToLongDateString().ToString();
@@ -39,8 +42,6 @@ namespace DTSServer
                 dt.Columns.Add("ZeroWarningTime", typeof(System.String));
                 dt.Columns.Add("Status", typeof(System.String));
 
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
 
                 SqlCommand cmd = new SqlCommand
@@ -112,7 +113,10 @@ namespace DTSServer
             }
             catch(Exception ex)
             {
+                sqlConnection.Close();
+
                 this.Empty_Card.Visible = true;
+                this.Error_Text.InnerText = ex.Message;
             }
         }
 

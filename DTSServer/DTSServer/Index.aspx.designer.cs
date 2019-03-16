@@ -58,6 +58,15 @@ namespace DTSServer {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Empty_Card;
         
         /// <summary>
+        /// Error_Text control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Error_Text;
+        
+        /// <summary>
         /// Timer1 control.
         /// </summary>
         /// <remarks>

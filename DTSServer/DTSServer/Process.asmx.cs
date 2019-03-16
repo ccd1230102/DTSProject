@@ -85,11 +85,10 @@ namespace DTSServer
         public bool PostRunningData(RunningData data)
         {
             bool ret = true;
-
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
             try
             {
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
 
                 SqlCommand cmd = new SqlCommand
@@ -145,6 +144,7 @@ namespace DTSServer
             }
             catch (Exception ex)
             {
+                sqlConnection.Close();
                 ret = false;
             }
 
@@ -155,11 +155,11 @@ namespace DTSServer
         public int PostWarningData(WarningData data)
         {
             int ret = -1;
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
 
             try
             {
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
 
                 SqlCommand cmd = new SqlCommand
@@ -186,7 +186,7 @@ namespace DTSServer
             }
             catch(Exception ex)
             {
-
+                sqlConnection.Close();
             }
 
             return ret;
@@ -196,11 +196,11 @@ namespace DTSServer
         public bool PostWarningFixedData(WarningFixedData data)
         {
             bool ret = true;
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
 
             try
             {
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
 
                 SqlCommand cmd = new SqlCommand
@@ -221,6 +221,7 @@ namespace DTSServer
             }
             catch(Exception ex)
             {
+                sqlConnection.Close();
                 ret = false;
             }
 
@@ -231,13 +232,13 @@ namespace DTSServer
         public bool PostConsumableList(ConsumableList list)
         {
             bool ret = true;
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
 
             try
             {
                 if (list.ConsumableIDs.Count != list.Residuals.Count) return false;
 
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
 
                 for (int n = 0; n < list.ConsumableIDs.Count; ++n)
@@ -266,6 +267,7 @@ namespace DTSServer
             }
             catch (Exception ex)
             {
+                sqlConnection.Close();
                 ret = false;
             }
 
@@ -276,11 +278,11 @@ namespace DTSServer
         public bool PostConsumableReplaceData(ConsumableReplaceData data)
         {
             bool ret = true;
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
 
             try
             {
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
 
                 SqlCommand cmd = new SqlCommand
@@ -299,7 +301,7 @@ namespace DTSServer
             }
             catch (Exception ex)
             {
-
+                sqlConnection.Close();
             }
 
             return ret;
@@ -309,11 +311,11 @@ namespace DTSServer
         public List<AlarmInfo> GetAlarmInfoConfigration()
         {
             List<AlarmInfo> ret = new List<AlarmInfo>();
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
 
             try
             {
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
 
                 SqlCommand cmd = new SqlCommand
@@ -342,7 +344,7 @@ namespace DTSServer
             }
             catch (Exception ex)
             {
-
+                sqlConnection.Close();
             }
 
             return ret;
@@ -352,11 +354,11 @@ namespace DTSServer
         public List<ConsumableInfo> GetConsumableInfoConfigration()
         {
             List<ConsumableInfo> ret = new List<ConsumableInfo>();
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
 
             try
             {
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
 
                 SqlCommand cmd = new SqlCommand
@@ -385,7 +387,7 @@ namespace DTSServer
             }
             catch (Exception ex)
             {
-
+                sqlConnection.Close();
             }
 
             return ret;

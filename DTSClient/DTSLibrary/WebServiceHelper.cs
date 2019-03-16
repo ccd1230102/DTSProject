@@ -20,35 +20,9 @@ namespace DTSLibrary
         private static Hashtable _xmlNamespaces = new Hashtable();//缓存xmlNamespace，避免重复调用GetNamespace
 
         /// <summary>
-        /// 需要WebService支持Post调用
-        /// </summary>
-        public static XmlDocument QueryPostWebService(String URL, String MethodName, Hashtable Pars)
-        {
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(URL + "/" + MethodName);
-            request.Method = "POST";
-            request.ContentType = "application/x-www-form-urlencoded";
-            SetWebRequest(request);
-            byte[] data = EncodePars(Pars);
-            WriteRequestData(request, data);
-            return ReadXmlResponse(request.GetResponse());
-        }
-
-        /// <summary>
-        /// 需要WebService支持Get调用
-        /// </summary>
-        public static XmlDocument QueryGetWebService(String URL, String MethodName, Hashtable Pars)
-        {
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(URL + "/" + MethodName + "?" + ParsToString(Pars));
-            request.Method = "GET";
-            request.ContentType = "application/x-www-form-urlencoded";
-            SetWebRequest(request);
-            return ReadXmlResponse(request.GetResponse());
-        }
-
-        /// <summary>
         /// 通用WebService调用(Soap),参数Pars为String类型的参数名、参数值
         /// </summary>
-        public static XmlDocument QuerySoapWebService(String URL, String MethodName, String ParName, Hashtable Pars)
+        public static XmlDocument QuerySoapWebService(String URL, String MethodName, String ParName = "", Hashtable Pars = null)
         {
             if (_xmlNamespaces.ContainsKey(URL))
             {
@@ -120,14 +94,19 @@ namespace DTSLibrary
             XmlElement soapBody = doc.CreateElement("soap", "Body", "http://schemas.xmlsoap.org/soap/envelope/");
             XmlElement soapMethod = doc.CreateElement(MethodName);
             soapMethod.SetAttribute("xmlns", XmlNs);
-            XmlElement namePar = doc.CreateElement(ParName);
-            foreach (string k in Pars.Keys)
+
+            if (ParName.Length > 0)
             {
-                XmlElement soapPar = doc.CreateElement(k);
-                soapPar.InnerXml = ObjectToSoapXml(Pars[k]);
-                namePar.AppendChild(soapPar);
+                XmlElement namePar = doc.CreateElement(ParName);
+                foreach (string k in Pars.Keys)
+                {
+                    XmlElement soapPar = doc.CreateElement(k);
+                    soapPar.InnerXml = ObjectToSoapXml(Pars[k]);
+                    namePar.AppendChild(soapPar);
+                }
+                soapMethod.AppendChild(namePar);
             }
-            soapMethod.AppendChild(namePar);
+
             soapBody.AppendChild(soapMethod);
             doc.DocumentElement.AppendChild(soapBody);
 

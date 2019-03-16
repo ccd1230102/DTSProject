@@ -22,12 +22,12 @@ namespace DTSServer
 
         private void Bind()
         {
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
             try
             {
                 DataTable dt = new DataTable("datatable");
 
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
                 SqlDataAdapter adt = new SqlDataAdapter("SELECT * FROM ConsumableConfig", sqlConnection);
                 adt.Fill(dt);
@@ -50,12 +50,15 @@ namespace DTSServer
             }
             catch(Exception ex)
             {
+                sqlConnection.Close();
                 this.Empty_Card.Visible = true;
             }
         }
 
         protected void ConsumableGridView_AddingRow(object sender, EventArgs e)
         {
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
             try
             {
                 string name = this.Model1_TextBox1.Text;
@@ -74,8 +77,6 @@ namespace DTSServer
                     return;
                 }
 
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
 
                 SqlCommand cmd = new SqlCommand
@@ -102,6 +103,7 @@ namespace DTSServer
             }
             catch (Exception ex)
             {
+                sqlConnection.Close();
                 string err = ex.Message;
             }
 
@@ -144,11 +146,11 @@ namespace DTSServer
             int index = e.RowIndex;
 
             int id = Convert.ToInt32(this.ConsumableGridView.DataKeys[index].Value);
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
 
             try
             {
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
                 SqlCommand cmd = new SqlCommand
                 {
@@ -163,6 +165,7 @@ namespace DTSServer
             }
             catch (Exception ex)
             {
+                sqlConnection.Close();
                 string err = ex.Message;
             }
 
@@ -195,11 +198,11 @@ namespace DTSServer
             }
 
             int id = Convert.ToInt32(this.ConsumableGridView.DataKeys[index].Value);
+            string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
+            SqlConnection sqlConnection = new SqlConnection(conString);
 
             try
             {
-                string conString = WebConfigurationManager.ConnectionStrings["Database1"].ToString();
-                SqlConnection sqlConnection = new SqlConnection(conString);
                 sqlConnection.Open();
                 SqlCommand cmd = new SqlCommand
                 {
@@ -218,6 +221,7 @@ namespace DTSServer
             }
             catch (Exception ex)
             {
+                sqlConnection.Close();
                 string err = ex.Message;
             }
 
