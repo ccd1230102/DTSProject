@@ -36,6 +36,11 @@ begin
     drop table DeviceData
 end
 
+if exists(select * from sysobjects where name='AutomaticConfig')
+begin
+    drop table AutomaticConfig
+end
+
 create table WarningConfig
 (
     ID int identity(1,1) primary key,
@@ -97,4 +102,10 @@ create table ConsumableReplaceData
 	ConsumableID int not null foreign key references ConsumableConfig(ID),
 	ReplacedTime DateTime not null,
 	ReplacedPeople nvarchar(18)
+)
+
+create table AutomaticConfig
+(
+	LeftDays int not null,
+	Enable bit not null
 )

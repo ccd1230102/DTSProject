@@ -41,6 +41,7 @@
                         <div class="dropdown-menu" aria-labelledby="dropdown02">
                             <a class="dropdown-item" href="#">报警配置</a>
                             <a class="dropdown-item" href="ConsumableConfig.aspx">易损件配置</a>
+                            <a class="dropdown-item" href="CleanHistoryConfig.aspx">清理数据配置</a>
                         </div>
                     </li>
                 </ul>

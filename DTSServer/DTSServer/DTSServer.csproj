@@ -67,6 +67,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CleanHistoryConfig.aspx" />
     <Content Include="ConsumableConfig.aspx" />
     <Content Include="ConsumableDetails.aspx" />
     <Content Include="Content\bootstrap-datepicker.css" />
@@ -83,6 +84,7 @@
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Global.asax" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\bootstrap-datepicker.zh-CN.min.js" />
@@ -143,6 +145,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CleanHistoryConfig.aspx.cs">
+      <DependentUpon>CleanHistoryConfig.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CleanHistoryConfig.aspx.designer.cs">
+      <DependentUpon>CleanHistoryConfig.aspx</DependentUpon>
+    </Compile>
     <Compile Include="ConsumableConfig.aspx.cs">
       <DependentUpon>ConsumableConfig.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -157,6 +166,10 @@
     <Compile Include="ConsumableDetails.aspx.designer.cs">
       <DependentUpon>ConsumableDetails.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="HistoryDataCleaner.cs" />
     <Compile Include="WarningConfig.aspx.cs">
       <DependentUpon>WarningConfig.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
